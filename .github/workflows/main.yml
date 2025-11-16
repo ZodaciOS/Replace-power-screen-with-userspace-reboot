@@ -1,45 +1,52 @@
-name: Build Rootless Tweak
+name: Build Tweak
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y dpkg-dev make perl clang git unzip
-          curl -L https://github.com/xerub/ldid/releases/latest/download/ldid_linux_x86_64 -o ldid
-          sudo mv ldid /usr/local/bin/ldid
-          sudo chmod +x /usr/local/bin/ldid
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y make curl git perl unzip xz-utils dpkg-dev
 
-      - name: Set up Theos
-        run: |
-          git clone --recursive https://github.com/theos/theos.git $HOME/theos
-          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+    - name: Install Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
 
-      - name: Install SDKs (official theos/sdks repo)
-        run: |
-          rm -rf $HOME/theos/sdks
-          git clone https://github.com/theos/sdks.git $HOME/theos/sdks
+    - name: Install Ellekit Toolchain
+      run: |
+        mkdir -p $HOME/toolchain
+        curl -L https://github.com/ellekit/toolchain/releases/latest/download/ios-arm64e-clang-toolchain.tar.xz -o tc.tar.xz
+        tar -xJf tc.tar.xz -C $HOME/toolchain
+        echo "export PATH=$HOME/toolchain/usr/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Build tweak
-        run: |
-          export THEOS=$HOME/theos
-          make package FINALPACKAGE=1
+    - name: Install iOS SDK (15.6)
+      run: |
+        mkdir -p $HOME/theos/sdks
+        curl -L https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS15.6.sdk.tar.xz -o sdk.tar.xz
+        tar -xJf sdk.tar.xz -C $HOME/theos/sdks
+        ls $HOME/theos/sdks
 
-      - name: Upload .deb
-        uses: actions/upload-artifact@v4
-        with:
-          name: deb-package
-          path: packages/*.deb
+    - name: Build Tweak
+      env:
+        THEOS: $HOME/theos
+      run: |
+        export PATH=$HOME/toolchain/usr/bin:$PATH
+        make clean
+        make package FINALPACKAGE=1
+
+    - name: Upload .deb
+      uses: actions/upload-artifact@v4
+      with:
+        name: tweak
+        path: packages/*.deb
