@@ -18,6 +18,11 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y make curl git perl unzip xz-utils dpkg-dev fakeroot libtinfo6 lzma
+        
+        # Install libtinfo5 from Ubuntu archive (required for older toolchain)
+        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        sudo apt install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        rm libtinfo5_6.3-2ubuntu0.1_amd64.deb
 
     - name: Install Theos
       run: |
@@ -46,7 +51,6 @@ jobs:
 
     - name: Build Tweak
       run: |
-        export THEOS=$HOME/theos
         make clean
         make package FINALPACKAGE=1
 
