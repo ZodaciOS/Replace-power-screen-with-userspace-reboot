@@ -6,7 +6,12 @@
 @end
 
 void userspaceReboot() {
-    posix_spawn(NULL, "/bin/launchctl", (char* const[]){"/bin/launchctl", "reboot", "userspace", NULL}, NULL, NULL, NULL);
+    posix_spawn(NULL, "/var/jb/usr/bin/launchctl", (char* const[]){
+        "/var/jb/usr/bin/launchctl",
+        "reboot",
+        "userspace",
+        NULL
+    }, NULL, NULL, NULL);
 }
 
 %hook SBPowerDownController
