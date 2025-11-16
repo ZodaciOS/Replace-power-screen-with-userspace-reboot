@@ -17,18 +17,19 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update
-        sudo apt install -y make curl git perl unzip xz-utils dpkg-dev
+        sudo apt install -y make curl git perl unzip xz-utils dpkg-dev fakeroot libtinfo5
 
     - name: Install Theos
       run: |
         git clone --recursive https://github.com/theos/theos.git $HOME/theos
 
-    - name: Install Ellekit Toolchain
+    - name: Install Bingner's arm64e Toolchain
       run: |
-        mkdir -p $HOME/toolchain
-        curl -L https://github.com/ellekit/toolchain/releases/latest/download/ios-arm64e-clang-toolchain.tar.xz -o tc.tar.xz
-        tar -xJf tc.tar.xz -C $HOME/toolchain
-        echo "export PATH=$HOME/toolchain/usr/bin:$PATH" >> $GITHUB_ENV
+        mkdir -p $HOME/theos/toolchain/linux/iphone
+        curl -LO https://github.com/sbingner/llvm-project/releases/download/v10.0.0-1/linux-ios-arm64e-clang-toolchain.tar.lzma
+        tar --lzma -xvf linux-ios-arm64e-clang-toolchain.tar.lzma -C $HOME/theos/toolchain/
+        mv $HOME/theos/toolchain/ios-arm64e-clang-toolchain/* $HOME/theos/toolchain/linux/iphone/
+        rm -rf linux-ios-arm64e-clang-toolchain.tar.lzma
 
     - name: Install iOS SDK (15.6)
       run: |
@@ -41,7 +42,6 @@ jobs:
       env:
         THEOS: $HOME/theos
       run: |
-        export PATH=$HOME/toolchain/usr/bin:$PATH
         make clean
         make package FINALPACKAGE=1
 
