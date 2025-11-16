@@ -1,0 +1,9 @@
+Package: com.zodacios.instantuserspacereboot
+Name: Instant Userspace Reboot
+Version: 1.0
+Architecture: iphoneos-arm64
+Description: Instant userspace reboot when power menu is opened
+Maintainer: ZodaciOS
+Author: ZodaciOS
+Section: Tweaks
+Depends: firmware (>= 16.0)
