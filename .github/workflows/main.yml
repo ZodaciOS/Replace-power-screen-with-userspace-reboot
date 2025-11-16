@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Install dependencies
@@ -28,19 +28,18 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
-      - name: Add SDK
+      - name: Add SDKs (official theos/sdks repo)
         run: |
           mkdir -p $HOME/theos/sdks
-          curl -L https://github.com/arichorn/ios-sdks/releases/download/16.0/iPhoneOS16.0.sdk.zip -o sdk.zip
-          unzip sdk.zip -d $HOME/theos/sdks
+          git clone https://github.com/theos/sdks.git $HOME/theos/sdks
 
       - name: Build tweak
         run: |
           export THEOS=$HOME/theos
           make package FINALPACKAGE=1
 
-      - name: Upload .deb
+      - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tweak
+          name: deb-package
           path: packages/*.deb
