@@ -38,7 +38,7 @@ jobs:
           make package
 
       - name: Upload .deb
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: InstantUserspaceReboot
           path: packages/*.deb
