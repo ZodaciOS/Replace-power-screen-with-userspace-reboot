@@ -17,7 +17,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update
-        sudo apt install -y make curl git perl unzip xz-utils dpkg-dev fakeroot libtinfo5
+        sudo apt install -y make curl git perl unzip xz-utils dpkg-dev fakeroot libtinfo6 lzma
 
     - name: Install Theos
       run: |
