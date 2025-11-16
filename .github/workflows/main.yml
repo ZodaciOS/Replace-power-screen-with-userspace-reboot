@@ -1,4 +1,4 @@
-name: Build Tweak (Modern Toolchain)
+name: Build Tweak
 
 on:
   push:
@@ -8,49 +8,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Install Dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y make curl git perl unzip xz-utils dpkg-dev fakeroot
+      uses: actions/checkout@v4
 
     - name: Install Theos
-      run: |
-        git clone --recursive https://github.com/theos/theos.git $HOME/theos
-        echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+      uses: Randomblock1/theos-action@v1
+      with:
+        theos-sdks-branch: 'master'
 
-    - name: Install Modern LLVM Toolchain
+    - name: Build Package
       run: |
-        # Install LLVM 16 (supports modern iOS SDKs and arm64e)
-        wget https://apt.llvm.org/llvm.sh
-        chmod +x llvm.sh
-        sudo ./llvm.sh 16
-        
-        # Set up toolchain symlinks for Theos
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
-
-    - name: Install iOS SDK (15.6)
-      run: |
-        mkdir -p $HOME/theos/sdks
-        curl -L https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS15.6.sdk.tar.xz -o sdk.tar.xz
-        tar -xJf sdk.tar.xz -C $HOME/theos/sdks
-        ls $HOME/theos/sdks
-
-    - name: Build Tweak
-      run: |
-        # Use system clang instead of Theos's bundled toolchain
-        export THEOS_TOOLCHAIN=linux
         make clean
         make package FINALPACKAGE=1
 
     - name: Upload .deb
       uses: actions/upload-artifact@v4
       with:
-        name: tweak
+        name: tweak-package
         path: packages/*.deb
