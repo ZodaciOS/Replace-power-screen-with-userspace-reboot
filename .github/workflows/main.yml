@@ -1,0 +1,44 @@
+name: Build Rootless Tweak
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ldid dpkg-dev make perl clang git
+
+      - name: Set up Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+
+      - name: Add SDK
+        run: |
+          mkdir -p $HOME/theos/sdks
+          curl -L https://github.com/theos/sdks/archive/refs/heads/master.zip -o sdks.zip
+          unzip sdks.zip
+          mv sdks-master/* $HOME/theos/sdks/
+
+      - name: Build tweak
+        run: |
+          export THEOS=$HOME/theos
+          make package
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v3
+        with:
+          name: InstantUserspaceReboot
+          path: packages/*.deb
