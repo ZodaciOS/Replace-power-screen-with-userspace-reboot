@@ -31,9 +31,8 @@ jobs:
       - name: Add SDK
         run: |
           mkdir -p $HOME/theos/sdks
-          curl -L https://github.com/theos/sdks/archive/refs/heads/master.zip -o sdks.zip
-          unzip sdks.zip
-          mv sdks-master/* $HOME/theos/sdks/
+          curl -L https://github.com/arichorn/ios-sdks/releases/download/16.0/iPhoneOS16.0.sdk.zip -o sdk.zip
+          unzip sdk.zip -d $HOME/theos/sdks
 
       - name: Build tweak
         run: |
@@ -41,7 +40,7 @@ jobs:
           make package FINALPACKAGE=1
 
       - name: Upload .deb
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: tweak
           path: packages/*.deb
