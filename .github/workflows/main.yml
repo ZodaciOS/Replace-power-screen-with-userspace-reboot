@@ -18,7 +18,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y ldid dpkg-dev make perl clang git
+          sudo apt install -y dpkg-dev make perl clang git unzip
+          curl -L https://github.com/xerub/ldid/releases/latest/download/ldid_linux_x86_64 -o ldid
+          sudo mv ldid /usr/local/bin/ldid
+          sudo chmod +x /usr/local/bin/ldid
 
       - name: Set up Theos
         run: |
@@ -35,10 +38,10 @@ jobs:
       - name: Build tweak
         run: |
           export THEOS=$HOME/theos
-          make package
+          make package FINALPACKAGE=1
 
       - name: Upload .deb
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: InstantUserspaceReboot
+          name: tweak
           path: packages/*.deb
