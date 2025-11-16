@@ -1,2 +1,6 @@
 # Replace-power-screen-with-userspace-reboot
-Rootless tweak to modify the “Swipe to power off” to userspace reboot instead
+
+
+userspace reboots when doing the power menu combination
+
+ignore the github repo description idk how to change it
