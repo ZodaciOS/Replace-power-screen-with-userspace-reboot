@@ -1,7 +1,1 @@
-{
-    Filter = {
-        Bundles = (
-            "com.apple.springboard"
-        );
-    };
-}
+// cant delete this file for some fuckass reason
